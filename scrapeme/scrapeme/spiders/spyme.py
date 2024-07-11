@@ -1,5 +1,4 @@
 import scrapy
-from scrapeme.items import Product
 
 class SpymeSpider(scrapy.Spider):
     name = "spyme"
@@ -20,12 +19,11 @@ class SpymeSpider(scrapy.Spider):
 
 
     def parse_product(self, response):
-        product = Product()
-        
-        product["name"] = response.xpath('//h1/text()').get()
-        product["price"] = response.xpath('//p[@class = "price"]/span/span/text()').get() + response.xpath('//p[@class = "price"]/span/text()').get()
-        product["description"] = response.xpath('//div[contains(@class, "short-description")]/p/text()').get()
-        product["stock"] = response.xpath('//p[contains(@class, "stock")]/text()').get()
 
+        yield {
+            "name" : response.xpath('//h1/text()').get(),
+            "price" : response.xpath('//p[@class = "price"]/span/span/text()').get() + response.xpath('//p[@class = "price"]/span/text()').get(),
+            "description" : response.xpath('//div[contains(@class, "short-description")]/p/text()').get(),
+            "stock" : response.xpath('//p[contains(@class, "stock")]/text()').get()
 
-        yield (product)
+        }
