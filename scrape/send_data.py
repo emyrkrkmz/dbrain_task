@@ -8,7 +8,11 @@ from scrapeme.spiders.spyme import SpymeSpider
 from scrapy import signals
 from scrapy.signalmanager import dispatcher
 
-p = Producer({'bootstrap.servers': 'localhost:9092'})
+kafka_broker = 'kafka:9093'
+
+
+p = Producer({'bootstrap.servers': kafka_broker})
+
 
 def delivery_report(err, msg):
     if err is not None:
@@ -38,3 +42,6 @@ for item in items:
     p.produce('topic1', json.dumps(item).encode('utf-8'), callback=delivery_report)
     p.flush()
     time.sleep(1)
+    
+p.flush()
+

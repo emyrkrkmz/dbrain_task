@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 import json
 
 app = FastAPI()
@@ -11,6 +11,6 @@ def read_data():
 
 @app.get("/data")
 def read_data():
-    with open('../scrapeme/data.json', 'r', encoding='utf-8') as file:
+    with open('data.json', 'r', encoding='utf-8') as file:
         data = json.load(file)
-    return data
+    return data 

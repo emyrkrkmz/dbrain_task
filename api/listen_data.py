@@ -1,7 +1,7 @@
 from confluent_kafka import Consumer, KafkaException, KafkaError
 
 conf = {
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': 'kafka:9093',
     'group.id': 'mygroup',
     'auto.offset.reset': 'earliest'
 }
@@ -10,14 +10,21 @@ consumer = Consumer(conf)
 
 consumer.subscribe(['topic1'])
 
-with open('data.json', 'a') as file:
+with open('data.json', 'w') as file:
     file.write( '[' + '\n')
+    timeout_counter = 0
+    timeout_limit = 3
     first = True
     try:
         while True:
             msg = consumer.poll(1.0)
             
             if msg is None:
+                if not(first):
+                    timeout_counter += 1
+                    if timeout_counter >= timeout_limit:
+                        print("No new messages received for 3 seconds, stopping.")
+                        break
                 print("Listening...")
                 continue
 
@@ -30,7 +37,7 @@ with open('data.json', 'a') as file:
                     break
             else:
                 print("Consumed and saved... ")
-                
+                timeout_counter = 0
                 if not first:
                     file.write(',\n')
     
@@ -38,7 +45,6 @@ with open('data.json', 'a') as file:
                 first = False
                 file.flush()
                 
-    except KeyboardInterrupt:
-        file.write(']')
     finally:
+        file.write(']')
         consumer.close()

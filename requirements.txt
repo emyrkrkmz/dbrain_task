@@ -1,0 +1,4 @@
+scrapy
+confluent-kafka
+fastapi
+uvicorn

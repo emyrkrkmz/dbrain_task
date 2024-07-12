@@ -1,10 +1,12 @@
-version: '2'
+version: '3.8'
 
 services:
   zookeeper:
     image: wurstmeister/zookeeper:latest
     ports:
       - "2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper
 
   kafka:
     image: wurstmeister/kafka:latest
@@ -19,4 +21,26 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - kafka-data:/var/lib/kafka
+
+  scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile.scrapy
+    depends_on:
+      - kafka
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile.consumer
+    volumes:
+      - ./scrape:/app/scrape
+    ports:
+      - "8000:8000"  # Expose FastAPI port
+    depends_on:
+      - kafka
+
+volumes:
+  zookeeper-data:
+  kafka-data:
