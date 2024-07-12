@@ -37,7 +37,7 @@ services:
     volumes:
       - ./scrape:/app/scrape
     ports:
-      - "8000:8000"  # Expose FastAPI port
+      - "8000:8000"
     depends_on:
       - kafka
 

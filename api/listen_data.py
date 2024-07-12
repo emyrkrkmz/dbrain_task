@@ -1,3 +1,4 @@
+import time
 from confluent_kafka import Consumer, KafkaException, KafkaError
 
 conf = {
@@ -6,6 +7,9 @@ conf = {
     'auto.offset.reset': 'earliest'
 }
 
+print("Waiting for consuming...")
+time.sleep(3)
+
 consumer = Consumer(conf)
 
 consumer.subscribe(['topic1'])
@@ -13,7 +17,7 @@ consumer.subscribe(['topic1'])
 with open('data.json', 'w') as file:
     file.write( '[' + '\n')
     timeout_counter = 0
-    timeout_limit = 3
+    timeout_limit = 5
     first = True
     try:
         while True:
@@ -23,7 +27,7 @@ with open('data.json', 'w') as file:
                 if not(first):
                     timeout_counter += 1
                     if timeout_counter >= timeout_limit:
-                        print("No new messages received for 3 seconds, stopping.")
+                        print("No new messages received for 5 seconds, stopping.")
                         break
                 print("Listening...")
                 continue
